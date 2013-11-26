@@ -5,19 +5,31 @@ var http = require('http'),
 
 function commit(req, res) {
 	fs.appendFileSync('data.txt', 'commit!\n');
-	console.log('append!');
+
 	var sys = require('sys');
-	var exec = require('child_process').exec;
-	var out = [];
-	function puts(error, stdout, stderr) {
-		sys.puts(stdout)
-	};
-	exec("git init", puts);
-	console.log('git!');
-	exec("git add .", puts);
-	console.log('add!');
-	exec("git commit -m 'commit'", puts);
-	console.log('commit!');
+	var spawn = require('child_process').spawn;
+
+	var add = spawn('git',['add','.']);
+	add.stdout.on('data', function(data) {
+		console.log('stdout: ' + data);
+	})
+	add.stderr.on('data', function(data) {
+		console.log('stderr: ' + data);
+	})
+	add.on('exit', function(data) {
+		console.log('exit code: ' + data);
+	})
+
+	var commit = spawn('git',['commit','-m','"commit!"']);
+	commit.stdout.on('data', function(data) {
+		console.log('stdout: ' + data);
+	})
+	commit.stderr.on('data', function(data) {
+		console.log('stderr: ' + data);
+	})
+	commit.on('exit', function(data) {
+		console.log('exit code: ' + data);
+	})
 
 	res.writeHead(200, {'Content-Type': 'text/plain'});
 	res.write("commit ok\n");

@@ -18,21 +18,25 @@ function commit(req, res) {
 	})
 	add.on('exit', function(data) {
 		console.log('exit code: ' + data);
-	})
-
-	var commit = spawn('git',['commit','-m','"commit!"']);
-	commit.stdout.on('data', function(data) {
-		console.log('stdout: ' + data);
-	})
-	commit.stderr.on('data', function(data) {
-		console.log('stderr: ' + data);
-	})
-	commit.on('exit', function(data) {
-		console.log('exit code: ' + data);
+		if(data == 0){
+			var commit = spawn('git',['commit','-m','"commit!"']);
+			commit.stdout.on('data', function(data) {
+				console.log('stdout: ' + data);
+			})
+			commit.stderr.on('data', function(data) {
+				console.log('stderr: ' + data);
+			})
+			commit.on('exit', function(data) {
+				console.log('exit code: ' + data);
+			})
+			res.writeHead(200, {'Content-Type': 'text/plain'});
+			res.write("commit ok\n");
+			res.end();
+		}
 	})
 
 	res.writeHead(200, {'Content-Type': 'text/plain'});
-	res.write("commit ok\n");
+	res.write("commit ng\n");
 	res.end();
 }
 
